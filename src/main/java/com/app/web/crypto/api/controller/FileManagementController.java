@@ -1,6 +1,7 @@
 package com.app.web.crypto.api.controller;
 
 import com.app.web.crypto.api.model.*;
+import com.app.web.crypto.api.payload.CommentRequest;
 import com.app.web.crypto.api.repository.UserRepository;
 import com.app.web.crypto.api.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,15 +20,14 @@ import javax.activation.MimetypesFileTypeMap;
 import javax.servlet.http.HttpServletRequest;
 import java.io.*;
 import java.nio.file.Files;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.nio.file.Paths;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 @RestController
-@CrossOrigin(origins = "http://localhost:4200")
+@CrossOrigin(origins = "http://localhost:3000")
 @RequestMapping(value = "/api/file")
 public class FileManagementController {
 
@@ -141,6 +141,18 @@ public class FileManagementController {
         return fileMetadataService.getAllWithRestrictDownload(user.getId());
     }
 
+    @GetMapping(value = "/{id}")
+    public FileMetadataDTO getFileById(@PathVariable Long id) {
+        FileMetadata fileMetadata = fileMetadataService.findById(id);
+        return new FileMetadataDTO(
+                fileMetadata.getId(),
+                fileMetadata.getFilename(),
+                fileMetadata.getSenderUsername(),
+                false,
+                fileMetadata.getComments().stream().map(comment -> new CommentDTO(comment.getContent(), comment.getCommentedBy())).collect(Collectors.toList())
+        );
+    }
+
     @DeleteMapping(value = "/deletefile")
     public Map<String, Boolean> deleteEmployee(@RequestBody FileMetadataDTO fileMetadataDto) {
 
@@ -214,7 +226,7 @@ public class FileManagementController {
         comment.setCommentedBy(commentRequest.getCommentedBy());
         commentService.save(comment);
 
-        return new CommentDTO();
+        return new CommentDTO(comment.getContent(), comment.getCommentedBy());
     }
 
 

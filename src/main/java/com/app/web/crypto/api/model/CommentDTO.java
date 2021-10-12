@@ -5,6 +5,13 @@ public class CommentDTO {
     private String content;
     private String commentedBy;
 
+    public CommentDTO() {
+    }
+    public CommentDTO(String content, String commentedBy) {
+        this.content = content;
+        this.commentedBy = commentedBy;
+    }
+
     public String getContent() {
         return content;
     }

@@ -1,4 +1,4 @@
-package com.app.web.crypto.api.model;
+package com.app.web.crypto.api.payload;
 
 public class CommentRequest {
 

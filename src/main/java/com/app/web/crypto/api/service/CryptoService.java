@@ -16,6 +16,7 @@ import java.security.*;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
+import java.util.Arrays;
 import java.util.Base64;
 
 
@@ -112,6 +113,7 @@ public class CryptoService {
         headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
         headers.setContentDispositionFormData(fileName, fileName);
         headers.setCacheControl("must-revalidate, post-check=0, pre-check=0");
+        headers.setAccessControlExposeHeaders(Arrays.asList("content-disposition"));
 
         ResponseEntity<byte[]> response = new ResponseEntity<>(encryptedFile, headers, HttpStatus.OK);
         return response;

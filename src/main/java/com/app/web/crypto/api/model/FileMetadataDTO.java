@@ -10,6 +10,17 @@ public class FileMetadataDTO {
     private boolean downloadable;
     private List<CommentDTO> comments;
 
+    public FileMetadataDTO() {
+    }
+    public FileMetadataDTO(Long id, String filename, String senderUsername, boolean downloadable, List<CommentDTO> comments) {
+
+        this.id = id;
+        this.filename = filename;
+        this.senderUsername = senderUsername;
+        this.downloadable = downloadable;
+        this.comments = comments;
+    }
+
     public Long getId() {
         return id;
     }

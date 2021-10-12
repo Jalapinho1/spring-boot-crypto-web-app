@@ -29,7 +29,7 @@ import java.util.Collection;
 import java.util.Collections;
 
 @RestController
-@CrossOrigin(origins = "http://localhost:4200")
+@CrossOrigin(origins = "http://localhost:3000")
 @RequestMapping("/api/auth")
 public class AuthController {
 
@@ -41,9 +41,6 @@ public class AuthController {
 
     @Autowired
     private RoleRepository roleRepository;
-
-//    @Autowired
-//    private CustomPasswordEncoder passwordEncoder;
 
     @Autowired
     private JwtTokenProvider tokenProvider;

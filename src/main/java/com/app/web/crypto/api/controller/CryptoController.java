@@ -1,5 +1,6 @@
 package com.app.web.crypto.api.controller;
 
+import com.app.web.crypto.api.payload.JwtAuthenticationResponse;
 import com.app.web.crypto.api.service.CryptoService;
 import com.app.web.crypto.api.service.KeyService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +19,7 @@ import java.nio.file.Files;
 import java.util.Arrays;
 
 @RestController
-@CrossOrigin(origins = "http://localhost:4200")
+@CrossOrigin(origins = "http://localhost:3000")
 @RequestMapping(value = "/api")
 public class CryptoController {
 
@@ -58,21 +59,24 @@ public class CryptoController {
     @PostMapping(path = "/decrypt")
     public ResponseEntity<byte[]> decryptFile(@RequestParam("file") MultipartFile file,
                                               @RequestParam("privateKey") String privateKey) throws Exception {
+        try{
+            byte[] checksumBytes = Arrays.copyOfRange(file.getBytes(), 0, CHECKSUM_LENGTH);
+            byte[] encSecretKeyArr = Arrays.copyOfRange(file.getBytes(), 64, 320);
 
-        byte[] checksumBytes = Arrays.copyOfRange(file.getBytes(), 0, CHECKSUM_LENGTH);
-        byte[] encSecretKeyArr = Arrays.copyOfRange(file.getBytes(), 64, 320);
+            byte[] secretKey = cryptoService.decryptSecretKey(encSecretKeyArr, privateKey);
+            byte[] decFileBytes = cryptoService.decryptFileData(Arrays.copyOfRange(file.getBytes(),
+                    CHECKSUM_LENGTH + SECRET_KEY_LENGTH, file.getBytes().length), secretKey);
 
-        byte[] secretKey = cryptoService.decryptSecretKey(encSecretKeyArr, privateKey);
-        byte[] decFileBytes = cryptoService.decryptFileData(Arrays.copyOfRange(file.getBytes(),
-                CHECKSUM_LENGTH + SECRET_KEY_LENGTH, file.getBytes().length), secretKey);
+            String checksum = cryptoService.calculateChecksum(file.getName(),decFileBytes);
+            String checksumFromFile = new String (checksumBytes);
+            if (!checksum.equals(checksumFromFile)) {
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Checksum not equal", new Exception());
+            }
 
-        String checksum = cryptoService.calculateChecksum(file.getName(),decFileBytes);
-        String checksumFromFile = new String (checksumBytes);
-        if (!checksum.equals(checksumFromFile)) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Checksum not equal", new Exception());
+            return cryptoService.downloadFile(decFileBytes, "decrypted" + file.getOriginalFilename());
+        }catch (Exception e){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Error while decrypting! Are you sure you provided an ecrypted file?", e);
         }
-
-        return cryptoService.downloadFile(decFileBytes, "decrypted" + file.getOriginalFilename());
     }
 
     @GetMapping(path = "/offlineapp")

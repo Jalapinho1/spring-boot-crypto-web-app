@@ -1,6 +1,8 @@
 package com.app.web.crypto.api.model;
 
 import javax.persistence.*;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 public class Comment {
@@ -12,6 +14,7 @@ public class Comment {
     private String commentedBy;
     @ManyToOne
     private FileMetadata fileMetadata;
+    private LocalDateTime commentedAt;
 
     public Long getId() {
         return id;
@@ -43,5 +46,13 @@ public class Comment {
 
     public void setFileMetadata(FileMetadata fileMetadata) {
         this.fileMetadata = fileMetadata;
+    }
+
+    public LocalDateTime getCommentedAt() {
+        return commentedAt;
+    }
+
+    public void setCommentedAt(LocalDateTime commentedAt) {
+        this.commentedAt = commentedAt;
     }
 }

@@ -21,7 +21,12 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.*;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -95,13 +100,6 @@ public class FileManagementController {
 //            Logger.getLogger("Setting XML parsing error!" + filePath  + " " + uploadDir).log(Level.SEVERE, filePath + " " + uploadDir, e);
 //        }
 
-        String filePath = null;
-        try{
-            filePath = "/home/xbruce/upbfiles/" + file.getOriginalFilename();
-        }catch (Exception e) {
-            Logger.getLogger("Setting XML parsing error!" + filePath  + " " + uploadDir).log(Level.SEVERE, filePath + " " + uploadDir, e);
-        }
-
         try {
             result.transferTo(new File(filePath));
         } catch (IOException e) {
@@ -143,13 +141,14 @@ public class FileManagementController {
 
     @GetMapping(value = "/{id}")
     public FileMetadataDTO getFileById(@PathVariable Long id) {
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         FileMetadata fileMetadata = fileMetadataService.findById(id);
         return new FileMetadataDTO(
                 fileMetadata.getId(),
                 fileMetadata.getFilename(),
                 fileMetadata.getSenderUsername(),
                 false,
-                fileMetadata.getComments().stream().map(comment -> new CommentDTO(comment.getContent(), comment.getCommentedBy())).collect(Collectors.toList())
+                fileMetadata.getComments().stream().map(comment -> new CommentDTO(comment.getContent(), comment.getCommentedBy(), comment.getCommentedAt().format(dtf))).collect(Collectors.toList())
         );
     }
 
@@ -220,13 +219,17 @@ public class FileManagementController {
         FileMetadata fm = fileMetadataService.findById(commentRequest.getFileMetadataId());
         // handle case if file was deleted
 
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        LocalDateTime savedAt = LocalDateTime.parse(commentRequest.getCommentedAt(), dtf);
+
         Comment comment = new Comment();
         comment.setContent(commentRequest.getContent());
         comment.setFileMetadata(fm);
         comment.setCommentedBy(commentRequest.getCommentedBy());
+        comment.setCommentedAt(savedAt);
         commentService.save(comment);
 
-        return new CommentDTO(comment.getContent(), comment.getCommentedBy());
+        return new CommentDTO(comment.getContent(), comment.getCommentedBy(), comment.getCommentedAt().format(dtf));
     }
 
 

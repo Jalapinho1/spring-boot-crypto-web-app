@@ -1,10 +1,13 @@
 package com.app.web.crypto.api.payload;
 
+import java.time.LocalDate;
+
 public class CommentRequest {
 
     private Long fileMetadataId;
     private String commentedBy;
     private String content;
+    private String commentedAt;
 
     public Long getFileMetadataId() {
         return fileMetadataId;
@@ -28,5 +31,13 @@ public class CommentRequest {
 
     public void setContent(String content) {
         this.content = content;
+    }
+
+    public String getCommentedAt() {
+        return commentedAt;
+    }
+
+    public void setCommentedAt(String commentedAt) {
+        this.commentedAt = commentedAt;
     }
 }

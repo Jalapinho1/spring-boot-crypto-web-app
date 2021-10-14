@@ -4,12 +4,19 @@ public class CommentDTO {
 
     private String content;
     private String commentedBy;
+    private String commentedAt;
 
     public CommentDTO() {
     }
     public CommentDTO(String content, String commentedBy) {
         this.content = content;
         this.commentedBy = commentedBy;
+    }
+
+    public CommentDTO(String content, String commentedBy, String commentedAt) {
+        this.content = content;
+        this.commentedBy = commentedBy;
+        this.commentedAt = commentedAt;
     }
 
     public String getContent() {
@@ -26,5 +33,13 @@ public class CommentDTO {
 
     public void setCommentedBy(String commentedBy) {
         this.commentedBy = commentedBy;
+    }
+
+    public String getCommentedAt() {
+        return commentedAt;
+    }
+
+    public void setCommentedAt(String commentedAt) {
+        this.commentedAt = commentedAt;
     }
 }

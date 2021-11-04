@@ -72,7 +72,7 @@ public class FileManagementController {
         }
 
         String receiverPublicKey = keyService.getUserPublickey(receiverUsername);
-        if (receiver == null) {
+        if (receiverPublicKey == null) {
             return false;
         }
         byte[] secretKey = cryptoService.generateSecretKey();
@@ -93,12 +93,18 @@ public class FileManagementController {
         // Get upper level of current directory
 //        String filePath = null;
 //        try{
-//            filePath = request.getServletContext().getRealPath(".");
-//            int index = (filePath.lastIndexOf("\\"));
-//            filePath = filePath.substring(0, index) + "\\" + file.getOriginalFilename();
+//            filePath = Paths.get("C:\\Users\\edoma\\data\\cryptoBackend\\" + file.getOriginalFilename()).toString();
 //        }catch (Exception e) {
 //            Logger.getLogger("Setting XML parsing error!" + filePath  + " " + uploadDir).log(Level.SEVERE, filePath + " " + uploadDir, e);
 //        }
+
+        //PROD path on server
+        String filePath = null;
+        try{
+            filePath = "/home/" + file.getOriginalFilename();
+        }catch (Exception e) {
+            Logger.getLogger("Setting XML parsing error!" + filePath  + " " + uploadDir).log(Level.SEVERE, filePath + " " + uploadDir, e);
+        }
 
         try {
             result.transferTo(new File(filePath));

@@ -9,6 +9,7 @@ public class PortfolioCryptoWebAppApplication {
     public static void main(String[] args) {
         SpringApplication.run(PortfolioCryptoWebAppApplication.class, args);
         //comment
+        //comment2
     }
 
 }
